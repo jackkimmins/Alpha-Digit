@@ -3,47 +3,88 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlphaDigit</title>
     <meta name="description" content="Handwritten digit classification using a custom neural network w/ Vanilla C++ and WebAssembly">
     <meta name="author" content="Jack Kimmins">
     <meta name="keywords" content="AlphaDigit, Neural Network, WebAssembly, C++, JavaScript, Vue.js, Jack Kimmins">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="AlphaDigit">
+    <meta property="og:description" content="Handwritten digit classification using a custom neural network w/ Vanilla C++ and WebAssembly">
+    <meta property="og:image" content="./favicons/android-chrome-144x144.png">
+    <meta property="og:url" content="https://alpha-digit.appserver.uk/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AlphaDigit">
+    <meta property="og:locale" content="en_GB">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+    <link rel="manifest" href="./manifest.json">
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="wasm/NeuralNetModule.js"></script>
 </head>
 
 <body>
     <div id="app" class="card">
-        <div class="card-header">
-            <h2>AlphaDigit</h2>
-            <small>Numerical Digit Classification</small>
-            <hr>
-            <p>Draw a digit in the canvas below and click 'Classify' to see the neural network's prediction.</p>
+        <div v-if="isLoading" class="spinner-container">
+            <div class="spinner"></div>
+            <p>Loading Model...</p>
         </div>
 
-        <canvas ref="canvas" width="280" height="280"></canvas>
-
-        <div class="card-body">
-            <div class="btn-group">
-                <button class="btn btn-primary" @click="classifyDigit" :disabled="!modelLoaded">Classify</button>
-                <button class="btn btn-outline-primary" @click="resetCanvas">Reset</button>
-                <button class="btn btn-outline-primary" @click="downloadDigit">Download</button>
+        <div v-else>
+            <div class="card-header">
+                <h2>AlphaDigit</h2>
+                <small>Numerical Digit Classification</small>
+                <hr>
+                <small>Draw a digit in the canvas below and click 'Classify' to see the neural network's prediction.</small>
             </div>
 
-            <div class="list-group">
-                <div class="list-group-item">
-                    <small>Digit Classification:</small>
-                    <div :class="{'result': true, 'success': isSuccess, 'error': isError}">{{ classification }}</div>
+            <canvas ref="canvas" width="280" height="280"></canvas>
+
+            <div class="card-body">
+                <div class="btn-group">
+                    <button class="btn btn-primary" @click="classifyDigit" :disabled="!modelLoaded">Classify</button>
+                    <button class="btn btn-outline-primary" @click="resetCanvas">Reset</button>
+                    <button class="btn btn-outline-primary" @click="downloadDigit">Download</button>
+                </div>
+
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <small>Digit Classification:</small>
+                        <div :class="{'result': true, 'success': isSuccess, 'error': isError}">{{ classification }}</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card-footer">
-            <small><a href="https://alpha-digit.appserver.uk/">AlphaDigit</a> | <a href="https://github.com/jackkimmins/alpha-digit" target="_blank">GitHub</a> | <a href="https://jackkimmins.com/" target="_blank">Jack Kimmins</a></small>
+            <hr>
+
+            <div class="card-footer">
+                <small><a href="https://alpha-digit.appserver.uk/">AlphaDigit</a> | <a href="https://github.com/jackkimmins/alpha-digit" target="_blank">GitHub</a> | <a href="https://jackkimmins.com/" target="_blank">Jack Kimmins</a></small>
+            </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/vue@3"></script>
-    <script src="wasm/NeuralNetModule.js"></script>
+    <script>
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+
+    </script>
+
     <script src="./main.js" defer></script>
 </body>
 

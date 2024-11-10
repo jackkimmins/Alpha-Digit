@@ -1,5 +1,12 @@
+:root {
+    --primary-color: #4e3ab4;
+    --secondary-color: #6d6b29;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+}
+
 body {
-    background-color: #6d6b29;
+    background-color: var(--secondary-color);
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -33,7 +40,7 @@ body {
     color: #777777;
 }
 
-.card-header hr {
+hr {
     margin: 10px 0;
     border: none;
     border-top: 1px solid #afafaf;
@@ -73,22 +80,26 @@ canvas {
 }
 
 .btn-primary {
-    background-color: #4e3ab4;
+    background-color: var(--primary-color);
     color: #ffffff;
 }
 
 .btn-primary:hover {
-    background-color: #3d2a94;
+    opacity: 0.8;
 }
 
 .btn-outline-primary {
     background-color: #ffffff;
-    color: #4e3ab4;
-    border: 2px solid #4e3ab4;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
 }
 
 .btn-outline-primary:hover {
     background-color: #f0f0f0;
+}
+
+.list-group {
+    margin-top: 10px;
 }
 
 .list-group-item {
@@ -115,15 +126,48 @@ canvas {
 
 .card-footer {
     text-align: center;
-    margin-top: 20px;
+    /* margin-top: 20px; */
 }
 
 .card-footer a {
-    color: #4e3ab4;
+    color: var(--primary-color);
     text-decoration: none;
     margin: 0 5px;
 }
 
 .card-footer a:hover {
     text-decoration: underline;
+}
+
+/* Loading Spinner Styles */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s linear infinite;
+    margin-bottom: 10px;
+}
+
+.spinner-container p {
+    margin-bottom: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 320px) {
+    .card {
+        width: 100%;
+    }
 }

@@ -1,0 +1,20 @@
+{
+    "short_name": "AlphaDigit",
+    "name": "AlphaDigit Alphanumeric Classification",
+    "icons": [
+      {
+        "src": "favicons/apple-icon-180x180.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      },
+      {
+        "src": "favicons/android-icon-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}
