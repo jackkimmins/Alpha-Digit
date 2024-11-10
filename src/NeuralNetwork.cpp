@@ -331,7 +331,7 @@ void NeuralNetwork::update_mini_batch(const std::vector<Database::DataPoint>& ba
         }
     }
 
-    // Update weights and biases using Adam optimizer
+    // Update weights and biases using Adam optimiser
     ++t_step;
     for (size_t l = 0; l < weights.size(); ++l) {
         for (size_t r = 0; r < weights[l].size(); ++r) {

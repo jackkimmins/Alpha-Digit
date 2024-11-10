@@ -5,6 +5,8 @@
 
 NeuralNetwork* nn = nullptr;
 
+const unsigned int seed = 42;
+
 extern "C" {
     // Init the neural network and load the model
     EMSCRIPTEN_KEEPALIVE
@@ -14,11 +16,17 @@ extern "C" {
             nn = nullptr;
         }
 
-        // Architecture Parameters - I would like to move these to a config file, future Jack problem! 😇
-        int input_size = 784; // 28x28 pixels
+        // -=- Network Architecture -=- //
+        // Input: 784 (28x28 pixels)
+        // Hidden Layers: 128, 64
+        // Output: 10 (Digits 0-9)
+
+        int input_size = 784;
         std::vector<int> hidden_layers = { 128, 64 };
-        int output_size = 10; // Digits 0-9
-        unsigned int seed = 42;
+        int output_size = 10;
+        // I would like to move these to a config file, future Jack problem! 😇
+
+        // -=- Network Architecture -=- //
 
         // Initialise the neural network
         nn = new NeuralNetwork(input_size, hidden_layers, output_size, seed);

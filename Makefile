@@ -7,10 +7,10 @@ CXXFLAGS = -std=c++20 -g -Iinclude
 # Compiler for WASM
 EMCC = em++
 
-# Compilation Flags for WASM (used during compilation of .cpp to .o)
+# Compilation Flags for WASM
 EMCC_COMPILE_FLAGS = -std=c++20 -O3 -Iinclude -fexceptions
 
-# Linking Flags for WASM (used during linking of .o to .js/.wasm)
+# Linking Flags for WASM
 EMCC_LINK_FLAGS = -s WASM=1 \
                   -s MODULARIZE=1 \
                   -s 'EXPORT_NAME="NeuralNetModule"' \
@@ -34,11 +34,11 @@ INFER_MAIN = main_infer.cpp
 WASM_MAIN = main_wasm.cpp
 SRC_SOURCES = $(wildcard src/*.cpp)
 
-# Object Files for Standard Executables (Compiled with g++)
+# Object Files for Standard Executables
 TRAIN_OBJECTS = $(OBJ_DIR_CPP)/main_train.o $(patsubst src/%.cpp,$(OBJ_DIR_CPP)/src_%.o,$(SRC_SOURCES))
 INFER_OBJECTS = $(OBJ_DIR_CPP)/main_infer.o $(patsubst src/%.cpp,$(OBJ_DIR_CPP)/src_%.o,$(SRC_SOURCES))
 
-# Object Files for WASM (Compiled with em++)
+# Object Files for WASM
 WASM_OBJECTS = $(OBJ_DIR_WASM)/main_wasm.o $(patsubst src/%.cpp,$(OBJ_DIR_WASM)/src_%.o,$(SRC_SOURCES))
 
 # Targets
@@ -48,7 +48,7 @@ WASM_OUTPUT_JS = $(WEB_DIR)/$(WASM_SUBDIR)/NeuralNetModule.js
 WASM_OUTPUT_WASM = $(WEB_DIR)/$(WASM_SUBDIR)/NeuralNetModule.wasm
 WASM_OUTPUT_DATA = $(WEB_DIR)/$(WASM_SUBDIR)/NeuralNetModule.data
 
-# All Target: Build Standard Executables and WASM Module
+# All Target: Build Executables and WASM Module
 all: $(TRAIN_TARGET) $(INFER_TARGET) $(WASM_OUTPUT_JS) $(WASM_OUTPUT_WASM) $(WASM_OUTPUT_DATA)
 
 # Train Executable
@@ -61,32 +61,32 @@ $(INFER_TARGET): $(INFER_OBJECTS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compile WASM Module JavaScript and WASM
+# Compile WASM Module
 $(WASM_OUTPUT_JS) $(WASM_OUTPUT_WASM) $(WASM_OUTPUT_DATA): $(WASM_OBJECTS)
 	@mkdir -p $(WEB_DIR)/$(WASM_SUBDIR)
 	$(EMCC) $(EMCC_LINK_FLAGS) -o $(WASM_OUTPUT_JS) $^
 
-# Explicit Rule: Compile main_train.cpp to obj/cpp/main_train.o
+# Compile main_train.cpp
 $(OBJ_DIR_CPP)/main_train.o: main_train.cpp
 	@mkdir -p $(OBJ_DIR_CPP)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Explicit Rule: Compile main_infer.cpp to obj/cpp/main_infer.o
+# Compile main_infer.cpp
 $(OBJ_DIR_CPP)/main_infer.o: main_infer.cpp
 	@mkdir -p $(OBJ_DIR_CPP)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Explicit Rule: Compile main_wasm.cpp to obj/wasm/main_wasm.o
+# Compile main_wasm.cpp
 $(OBJ_DIR_WASM)/main_wasm.o: main_wasm.cpp
 	@mkdir -p $(OBJ_DIR_WASM)
 	$(EMCC) $(EMCC_COMPILE_FLAGS) -c $< -o $@
 
-# Pattern Rule: Compile src/*.cpp to obj/cpp/src_*.o (Compiled with g++)
+# Pattern Rule: Compile src/*.cpp to obj/cpp/src_*.o
 $(OBJ_DIR_CPP)/src_%.o: src/%.cpp
 	@mkdir -p $(OBJ_DIR_CPP)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Pattern Rule: Compile src/*.cpp to obj/wasm/src_%.o (Compiled with em++)
+# Pattern Rule: Compile src/*.cpp to obj/wasm/src_%.o
 $(OBJ_DIR_WASM)/src_%.o: src/%.cpp
 	@mkdir -p $(OBJ_DIR_WASM)
 	$(EMCC) $(EMCC_COMPILE_FLAGS) -c $< -o $@
