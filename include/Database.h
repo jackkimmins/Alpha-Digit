@@ -9,7 +9,7 @@ class Database {
 public:
     struct DataPoint {
         int label;                      // Digit label (0-9)
-        std::vector<double> features;   // Normalized pixel values (0 to 1)
+        std::vector<double> features;   // Normalised pixel values (0 to 1)
     };
 
     // Constructor that loads data from a CSV file with a given seed
@@ -34,4 +34,4 @@ private:
     void load_data(const std::string& filepath);
 };
 
-#endif // DATABASE_H
+#endif

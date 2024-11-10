@@ -16,4 +16,4 @@ private:
     const std::vector<Database::DataPoint>& test_data;
 };
 
-#endif // EVALUATOR_H
+#endif

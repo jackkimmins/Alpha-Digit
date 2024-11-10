@@ -12,11 +12,7 @@ public:
     NeuralNetwork(int input_size, const std::vector<int>& hidden_layers_sizes, int output_size, unsigned int seed);
 
     // Trains the network with specified parameters
-    void train(const std::vector<Database::DataPoint>& train_data,
-               const std::vector<Database::DataPoint>& validation_data,
-               int epochs, int batch_size,
-               double initial_learning_rate, double decay_rate, int decay_steps,
-               bool early_stopping = false, int patience = 5);
+    void train(const std::vector<Database::DataPoint>& train_data, const std::vector<Database::DataPoint>& validation_data, int epochs, int batch_size, double initial_learning_rate, double decay_rate, int decay_steps, bool early_stopping = false, int patience = 5);
 
     // Predicts the label for a given input vector
     int predict(const std::vector<double>& input) const;
@@ -27,7 +23,7 @@ public:
     // Loads the model parameters from a file
     void load_model(const std::string& filename);
 
-    // New Inference Method: Classify user input string
+    // Inference Method - Classify user input string
     int classify_user_input(const std::string& input) const;
 
 private:
@@ -77,4 +73,4 @@ private:
     std::mt19937 rng_weights;                                   // RNG for weight initialization
 };
 
-#endif // NEURALNETWORK_H
+#endif
