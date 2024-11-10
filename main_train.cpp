@@ -8,7 +8,8 @@ const unsigned int seed = 42;
 
 int main()
 {
-    std::string dataset_path = "datasets/mnist_test.csv";
+    // std::string dataset_path = "datasets/mnist_10000.csv";
+    std::string dataset_path = "/root/CODE/_datasets/mnist.csv";
     std::string model_save_path = "models/best_model.dat";
     std::filesystem::create_directories("models");
 

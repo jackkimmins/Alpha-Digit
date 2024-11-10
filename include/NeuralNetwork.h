@@ -8,7 +8,7 @@
 
 class NeuralNetwork {
 public:
-    // Constructor sets up the architecture and initializes weights
+    // Constructor sets up the architecture and initialises weights
     NeuralNetwork(int input_size, const std::vector<int>& hidden_layers_sizes, int output_size, unsigned int seed);
 
     // Trains the network with specified parameters
@@ -57,7 +57,7 @@ private:
     std::vector<std::vector<double>> biases;                    // Biases for each layer
     std::vector<std::vector<std::vector<double>>> weights;      // Weights between layers
 
-    // Adam optimizer parameters
+    // Adam optimiser parameters
     std::vector<std::vector<std::vector<double>>> m_w;          // First moment estimates for weights
     std::vector<std::vector<double>> m_b;                       // First moment estimates for biases
     std::vector<std::vector<std::vector<double>>> v_w;          // Second moment estimates for weights
@@ -67,7 +67,7 @@ private:
     double beta2 = 0.999;                                       // Exponential decay rate for second moment
     double epsilon = 1e-8;                                      // Constant to prevent division by zero
     double learning_rate = 0.001;                               // Learning rate
-    int t_step = 0;                                             // Time step for Adam optimizer
+    int t_step = 0;                                             // Time step for Adam optimiser
 
     unsigned int base_seed;                                     // Base seed for deterministic behavior
     std::mt19937 rng_weights;                                   // RNG for weight initialization
