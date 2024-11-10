@@ -10,38 +10,35 @@
 #include <sstream>
 #include <cstdint>
 
-// Constructor implementation
-NeuralNetwork::NeuralNetwork(int input_size, const std::vector<int>& hidden_layers_sizes, int output_size, unsigned int seed)
-    : input_size(input_size), output_size(output_size), base_seed(seed), rng_weights(seed + 1) {
-    // Define layer sizes
+// Constructor
+NeuralNetwork::NeuralNetwork(int input_size, const std::vector<int>& hidden_layers_sizes, int output_size, unsigned int seed) : input_size(input_size), output_size(output_size), base_seed(seed), rng_weights(seed + 1) {
+    // Layer Sizes
     layer_sizes.push_back(input_size);
     layer_sizes.insert(layer_sizes.end(), hidden_layers_sizes.begin(), hidden_layers_sizes.end());
     layer_sizes.push_back(output_size);
 
     std::cout << "Network Architecture: ";
-    for (size_t i = 0; i < layer_sizes.size(); ++i)
-        std::cout << layer_sizes[i] << (i < layer_sizes.size() - 1 ? " -> " : "\n");
+    for (size_t i = 0; i < layer_sizes.size(); ++i) std::cout << layer_sizes[i] << (i < layer_sizes.size() - 1 ? " -> " : "\n");
 
-    // Initialize weights and biases with small random values
-    // Initialize weights
+    // Initialise weights and biases with random values
     for (size_t i = 1; i < layer_sizes.size(); ++i) {
         int rows = layer_sizes[i];
         int cols = layer_sizes[i - 1];
         std::normal_distribution<double> dist(0.0, 1.0 / std::sqrt(cols));
 
-        // Initialize weights
+        // Initialise weights
         std::vector<std::vector<double>> layer_weights(rows, std::vector<double>(cols));
         for (auto& row : layer_weights)
             for (auto& weight : row)
                 weight = dist(rng_weights);
         weights.push_back(layer_weights);
 
-        // Initialize biases
+        // Initialise biases
         std::vector<double> layer_biases(rows);
         for (auto& bias : layer_biases) bias = dist(rng_weights);
         biases.push_back(layer_biases);
 
-        // Initialize Adam optimizer parameters to zero
+        // Initialise Adam optimizer parameters to zero
         m_w.emplace_back(rows, std::vector<double>(cols, 0.0));
         v_w.emplace_back(rows, std::vector<double>(cols, 0.0));
         m_b.emplace_back(rows, 0.0);
@@ -49,11 +46,8 @@ NeuralNetwork::NeuralNetwork(int input_size, const std::vector<int>& hidden_laye
     }
 }
 
-void NeuralNetwork::train(const std::vector<Database::DataPoint>& train_data,
-                          const std::vector<Database::DataPoint>& validation_data,
-                          int epochs, int batch_size,
-                          double initial_learning_rate, double decay_rate, int decay_steps,
-                          bool early_stopping, int patience) {
+// Train the neural network with the given hyperparameters
+void NeuralNetwork::train(const std::vector<Database::DataPoint>& train_data, const std::vector<Database::DataPoint>& validation_data, int epochs, int batch_size, double initial_learning_rate, double decay_rate, int decay_steps, bool early_stopping, int patience) {
     if (train_data.empty()) {
         std::cerr << "Training data is empty. Cannot train the network." << std::endl;
         return;
@@ -124,6 +118,7 @@ void NeuralNetwork::train(const std::vector<Database::DataPoint>& train_data,
     }
 }
 
+// Inference using the trained model
 int NeuralNetwork::predict(const std::vector<double>& input) const {
     if (input.size() != static_cast<size_t>(input_size)) {
         std::cerr << "Input size mismatch. Expected " << input_size << " but got " << input.size() << "." << std::endl;
@@ -134,6 +129,7 @@ int NeuralNetwork::predict(const std::vector<double>& input) const {
     return std::distance(output.begin(), std::max_element(output.begin(), output.end()));
 }
 
+// Save the model to file
 void NeuralNetwork::save_model(const std::string& filename) const {
     std::ofstream out(filename, std::ios::binary);
     if (!out.is_open()) {
@@ -150,8 +146,7 @@ void NeuralNetwork::save_model(const std::string& filename) const {
         uint32_t cols = static_cast<uint32_t>(weights[l][0].size());
         out.write(reinterpret_cast<const char*>(&rows), sizeof(uint32_t));
         out.write(reinterpret_cast<const char*>(&cols), sizeof(uint32_t));
-        for (const auto& row : weights[l])
-            out.write(reinterpret_cast<const char*>(row.data()), cols * sizeof(double));
+        for (const auto& row : weights[l]) out.write(reinterpret_cast<const char*>(row.data()), cols * sizeof(double));
 
         uint32_t biases_size = static_cast<uint32_t>(biases[l].size());
         out.write(reinterpret_cast<const char*>(&biases_size), sizeof(uint32_t));
@@ -162,6 +157,7 @@ void NeuralNetwork::save_model(const std::string& filename) const {
     std::cout << "Model saved to " << filename << "\n";
 }
 
+// Load the model from file
 void NeuralNetwork::load_model(const std::string& filename) {
     std::ifstream in(filename, std::ios::binary);
     if (!in.is_open()) {
@@ -173,16 +169,14 @@ void NeuralNetwork::load_model(const std::string& filename) {
     in.read(reinterpret_cast<char*>(&num_layers), sizeof(uint32_t));
     std::cout << "Number of layers: " << num_layers << std::endl;
 
-    if (num_layers < 2) { // At least input and output layers
+    if (num_layers < 2) { // Minimum 2 layers (input and output)
         std::cerr << "Error: Number of layers is too small: " << num_layers << std::endl;
         return;
     }
 
     layer_sizes.resize(num_layers);
     in.read(reinterpret_cast<char*>(layer_sizes.data()), num_layers * sizeof(uint32_t));
-    for (size_t i = 0; i < layer_sizes.size(); ++i) {
-        std::cout << "Layer " << i << " size: " << layer_sizes[i] << std::endl;
-    }
+    for (size_t i = 0; i < layer_sizes.size(); ++i) std::cout << "Layer " << i << " size: " << layer_sizes[i] << std::endl;
 
     weights.clear();
     biases.clear();
@@ -197,7 +191,7 @@ void NeuralNetwork::load_model(const std::string& filename) {
         in.read(reinterpret_cast<char*>(&cols), sizeof(uint32_t));
         std::cout << "Layer " << l << " dimensions (rows x cols): " << rows << " x " << cols << std::endl;
 
-        // Corrected Validation Condition
+        // Sanity check for dimensions
         if (rows != static_cast<uint32_t>(layer_sizes[l + 1]) || cols != static_cast<uint32_t>(layer_sizes[l])) {
             std::cerr << "Error: Unexpected dimensions for layer " << l 
                       << " (expected " << layer_sizes[l + 1] << " x " << layer_sizes[l] 
@@ -205,7 +199,7 @@ void NeuralNetwork::load_model(const std::string& filename) {
             return;
         }
 
-        // Read weights
+        // Read weights for the layer
         std::vector<std::vector<double>> layer_weights(rows, std::vector<double>(cols));
         for (size_t r = 0; r < rows; ++r) {
             in.read(reinterpret_cast<char*>(layer_weights[r].data()), cols * sizeof(double));
@@ -216,12 +210,13 @@ void NeuralNetwork::load_model(const std::string& filename) {
         }
         weights.push_back(layer_weights);
 
-        // Read biases
+        // Read biases for the layer
         uint32_t biases_size;
         in.read(reinterpret_cast<char*>(&biases_size), sizeof(uint32_t));
         std::cout << "Biases size for layer " << l << ": " << biases_size << std::endl;
 
-        if (biases_size != static_cast<uint32_t>(layer_sizes[l + 1])) { // Biases should match next layer size
+        // Another sanity check; biases should match next layer size
+        if (biases_size != static_cast<uint32_t>(layer_sizes[l + 1])) {
             std::cerr << "Error: Biases size (" << biases_size 
                       << ") does not match layer output size (" << layer_sizes[l + 1] 
                       << ") for layer " << l << std::endl;
@@ -236,10 +231,10 @@ void NeuralNetwork::load_model(const std::string& filename) {
         }
         biases.push_back(layer_biases);
 
-        // Reinitialize Adam optimizer parameters to zero
+        // ReInit Adam optimiser parameters to zero
         m_w.emplace_back(rows, std::vector<double>(cols, 0.0));
         v_w.emplace_back(rows, std::vector<double>(cols, 0.0));
-        m_b.emplace_back(layer_sizes[l + 1], 0.0); // biases are per neuron in the next layer
+        m_b.emplace_back(layer_sizes[l + 1], 0.0);
         v_b.emplace_back(layer_sizes[l + 1], 0.0);
     }
 
@@ -247,6 +242,7 @@ void NeuralNetwork::load_model(const std::string& filename) {
     std::cout << "Model loaded from " << filename << "\n";
 }
 
+// Take user input, validate and classify
 int NeuralNetwork::classify_user_input(const std::string& input) const {
     std::vector<double> features;
     std::stringstream ss(input);
@@ -264,7 +260,7 @@ int NeuralNetwork::classify_user_input(const std::string& input) const {
                 std::cerr << "Error: Pixel value out of range (0-255): " << val << "\n";
                 return -1;
             }
-            features.push_back(val / 255.0); // Normalize
+            features.push_back(val / 255.0);
         } catch (const std::exception& e) {
             std::cerr << "Error parsing value '" << token << "': " << e.what() << "\n";
             return -1;
@@ -280,27 +276,27 @@ int NeuralNetwork::classify_user_input(const std::string& input) const {
     return predict(features);
 }
 
+// Feedforward pass through the network
 std::vector<double> NeuralNetwork::feedforward(const std::vector<double>& input) const {
     std::vector<double> activation = input;
-    for (size_t i = 0; i < weights.size() - 1; ++i)
-        activation = sigmoid(vec_add(mat_vec_mul(weights[i], activation), biases[i]));
+    for (size_t i = 0; i < weights.size() - 1; ++i) activation = sigmoid(vec_add(mat_vec_mul(weights[i], activation), biases[i]));
     activation = softmax(vec_add(mat_vec_mul(weights.back(), activation), biases.back()));
     return activation;
 }
 
+// Update weights and biases using mini-batch gradient descent
 void NeuralNetwork::update_mini_batch(const std::vector<Database::DataPoint>& batch) {
     if (batch.empty()) return;
 
-    // Initialize gradients to zero
+    // Initialise gradients to zero
     auto nabla_w = weights;
     auto nabla_b = biases;
     for (auto& layer : nabla_w)
         for (auto& neuron : layer)
             std::fill(neuron.begin(), neuron.end(), 0.0);
-    for (auto& layer : nabla_b)
-        std::fill(layer.begin(), layer.end(), 0.0);
+    for (auto& layer : nabla_b) std::fill(layer.begin(), layer.end(), 0.0);
 
-    // Determine the number of threads
+    // Number of threads
     unsigned int num_threads = std::thread::hardware_concurrency();
     if (num_threads == 0) num_threads = 2;
     size_t batch_size_per_thread = batch.size() / num_threads;
@@ -326,45 +322,46 @@ void NeuralNetwork::update_mini_batch(const std::vector<Database::DataPoint>& ba
             for (size_t r = 0; r < nabla_w[l].size(); ++r)
                 for (size_t c = 0; c < nabla_w[l][r].size(); ++c)
                     nabla_w[l][r][c] += partial_nabla_w[l][r][c];
-            for (size_t r = 0; r < nabla_b[l].size(); ++r)
-                nabla_b[l][r] += partial_nabla_b[l][r];
+            for (size_t r = 0; r < nabla_b[l].size(); ++r) nabla_b[l][r] += partial_nabla_b[l][r];
         }
     }
 
-    // Update weights and biases using Adam optimiser
+    // Update weights and biases using Adam optimiser - found the following in this paper: https://arxiv.org/abs/1412.6980
     ++t_step;
-    for (size_t l = 0; l < weights.size(); ++l) {
-        for (size_t r = 0; r < weights[l].size(); ++r) {
-            for (size_t c = 0; c < weights[l][r].size(); ++c) {
-                double grad = nabla_w[l][r][c] / batch.size();
-                m_w[l][r][c] = beta1 * m_w[l][r][c] + (1 - beta1) * grad;
-                v_w[l][r][c] = beta2 * v_w[l][r][c] + (1 - beta2) * grad * grad;
-                double m_hat = m_w[l][r][c] / (1 - std::pow(beta1, t_step));
-                double v_hat = v_w[l][r][c] / (1 - std::pow(beta2, t_step));
-                weights[l][r][c] -= learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);
+    for (size_t l = 0; l < weights.size(); ++l) {                                                   // For each layer
+        for (size_t r = 0; r < weights[l].size(); ++r) {                                            // For each neuron in the layer
+            for (size_t c = 0; c < weights[l][r].size(); ++c) {                                     // For each weight in the neuron
+                double grad = nabla_w[l][r][c] / batch.size();                                      // Compute average gradient
+                m_w[l][r][c] = beta1 * m_w[l][r][c] + (1 - beta1) * grad;                           // Update first moment estimate
+                v_w[l][r][c] = beta2 * v_w[l][r][c] + (1 - beta2) * grad * grad;                    // Update second moment estimate
+                double m_hat = m_w[l][r][c] / (1 - std::pow(beta1, t_step));                        // Bias-corrected first moment estimate
+                double v_hat = v_w[l][r][c] / (1 - std::pow(beta2, t_step));                        // Bias-corrected second moment estimate
+                weights[l][r][c] -= learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);           // Update weights
             }
         }
-        for (size_t r = 0; r < biases[l].size(); ++r) {
-            double grad = nabla_b[l][r] / batch.size();
-            m_b[l][r] = beta1 * m_b[l][r] + (1 - beta1) * grad;
-            v_b[l][r] = beta2 * v_b[l][r] + (1 - beta2) * grad * grad;
-            double m_hat = m_b[l][r] / (1 - std::pow(beta1, t_step));
-            double v_hat = v_b[l][r] / (1 - std::pow(beta2, t_step));
-            biases[l][r] -= learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);
+        for (size_t r = 0; r < biases[l].size(); ++r) {                                             // For each bias in the layer
+            double grad = nabla_b[l][r] / batch.size();                                             // Compute average gradient
+            m_b[l][r] = beta1 * m_b[l][r] + (1 - beta1) * grad;                                     // Update first moment estimate
+            v_b[l][r] = beta2 * v_b[l][r] + (1 - beta2) * grad * grad;                              // Update second moment estimate
+            double m_hat = m_b[l][r] / (1 - std::pow(beta1, t_step));                               // Bias-corrected first moment estimate
+            double v_hat = v_b[l][r] / (1 - std::pow(beta2, t_step));                               // Bias-corrected second moment estimate
+            biases[l][r] -= learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);                   // Update biases
         }
     }
 }
 
+// Compute loss on the given data
 double NeuralNetwork::compute_loss(const std::vector<Database::DataPoint>& data) const {
     double total_loss = 0.0;
     for (const auto& data_point : data) {
         std::vector<double> output = feedforward(data_point.features);
-        double loss = -std::log(output[data_point.label] + 1e-15); // Prevent log(0)
+        double loss = -std::log(output[data_point.label] + 1e-15); // Just trying to prevent log(0), not sure if this is the best way 😇
         total_loss += loss;
     }
     return total_loss / data.size();
 }
 
+// Compute accuracy on the given data
 double NeuralNetwork::compute_accuracy(const std::vector<Database::DataPoint>& data) const {
     int correct = 0;
     for (const auto& data_point : data) {
@@ -374,6 +371,7 @@ double NeuralNetwork::compute_accuracy(const std::vector<Database::DataPoint>& d
     return static_cast<double>(correct) / data.size();
 }
 
+// Compute gradients using backpropagation
 std::pair<std::vector<std::vector<std::vector<double>>>, std::vector<std::vector<double>>> NeuralNetwork::backprop(const Database::DataPoint& data_point) const {
     std::vector<std::vector<double>> activations;       // Activations of each layer
     std::vector<std::vector<double>> zs;                // Weighted inputs for each layer
@@ -388,14 +386,13 @@ std::pair<std::vector<std::vector<std::vector<double>>>, std::vector<std::vector
         activations.push_back(activation);
     }
 
-    // Initialize gradients to zero
+    // Initialise gradients to zero
     auto nabla_w = weights;
     auto nabla_b = biases;
     for (auto& layer : nabla_w)
         for (auto& neuron : layer)
             std::fill(neuron.begin(), neuron.end(), 0.0);
-    for (auto& layer : nabla_b)
-        std::fill(layer.begin(), layer.end(), 0.0);
+    for (auto& layer : nabla_b) std::fill(layer.begin(), layer.end(), 0.0);
 
     // Compute output error
     std::vector<double> delta = cost_derivative(activations.back(), data_point.label);
@@ -418,6 +415,9 @@ std::pair<std::vector<std::vector<std::vector<double>>>, std::vector<std::vector
 
     return { nabla_w, nabla_b };
 }
+
+
+// The following functions are just utility functions for this class:
 
 std::vector<double> NeuralNetwork::sigmoid(const std::vector<double>& z) const {
     std::vector<double> result(z.size());
@@ -511,13 +511,12 @@ std::vector<std::vector<double>> NeuralNetwork::transpose(const std::vector<std:
 
 std::vector<double> NeuralNetwork::flatten(const std::vector<std::vector<double>>& mat) const {
     std::vector<double> flat;
-    for (const auto& row : mat)
-        flat.insert(flat.end(), row.begin(), row.end());
+    for (const auto& row : mat) flat.insert(flat.end(), row.begin(), row.end());
     return flat;
 }
 
 std::pair<std::vector<std::vector<std::vector<double>>>, std::vector<std::vector<double>>> NeuralNetwork::compute_partial_gradients(const std::vector<Database::DataPoint>& subset) const {
-    // Initialize local gradients to zero
+    // Initialise local gradients to zero
     auto partial_nabla_w = weights;
     auto partial_nabla_b = biases;
     for (auto& layer : partial_nabla_w)
@@ -536,8 +535,7 @@ std::pair<std::vector<std::vector<std::vector<double>>>, std::vector<std::vector
             for (size_t r = 0; r < partial_nabla_w[l].size(); ++r)
                 for (size_t c = 0; c < partial_nabla_w[l][r].size(); ++c)
                     partial_nabla_w[l][r][c] += delta_nabla_w[l][r][c];
-            for (size_t r = 0; r < partial_nabla_b[l].size(); ++r)
-                partial_nabla_b[l][r] += delta_nabla_b[l][r];
+            for (size_t r = 0; r < partial_nabla_b[l].size(); ++r) partial_nabla_b[l][r] += delta_nabla_b[l][r];
         }
     }
 

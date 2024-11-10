@@ -6,10 +6,10 @@
 #include <cmath>
 #include <cstdlib>
 
-Database::Database(const std::string& filepath, unsigned int seed) : rng(seed) {
-    load_data(filepath);
-}
+// Load data from the given file path
+Database::Database(const std::string& filepath, unsigned int seed) : rng(seed) { load_data(filepath); }
 
+// Split the data into training, validation, and testing sets
 void Database::split_data(double train_ratio, double validation_ratio) {
     size_t train_size = static_cast<size_t>(data.size() * train_ratio);
     size_t validation_size = static_cast<size_t>(data.size() * validation_ratio);
@@ -22,17 +22,9 @@ void Database::split_data(double train_ratio, double validation_ratio) {
               << test_data.size() << " testing data points.\n";
 }
 
-const std::vector<Database::DataPoint>& Database::get_train_data() const {
-    return train_data;
-}
-
-const std::vector<Database::DataPoint>& Database::get_validation_data() const {
-    return validation_data;
-}
-
-const std::vector<Database::DataPoint>& Database::get_test_data() const {
-    return test_data;
-}
+const std::vector<Database::DataPoint>& Database::get_train_data() const { return train_data; }
+const std::vector<Database::DataPoint>& Database::get_validation_data() const { return validation_data; }
+const std::vector<Database::DataPoint>& Database::get_test_data() const { return test_data; }
 
 void Database::load_data(const std::string& filepath) {
     std::ifstream file(filepath);
@@ -42,11 +34,12 @@ void Database::load_data(const std::string& filepath) {
     }
 
     std::string line;
-    if (!std::getline(file, line)) { // Skip header
+    if (!std::getline(file, line)) {
         std::cerr << "Dataset file is empty." << std::endl;
         std::exit(1);
     }
 
+    // Need to change this to be more flexible, eventually I want to be able to load any dataset
     const size_t expected_columns = 785; // 1 label + 784 features
     size_t line_number = 1;
 
@@ -72,8 +65,7 @@ void Database::load_data(const std::string& filepath) {
             } else {
                 try {
                     double pixel = std::stod(cell);
-                    if (pixel < 0.0 || pixel > 255.0)
-                        throw std::out_of_range("Pixel value out of range");
+                    if (pixel < 0.0 || pixel > 255.0) throw std::out_of_range("Pixel value out of range");
                     data_point.features.push_back(pixel / 255.0);
                 } catch (const std::exception& e) {
                     std::cerr << "Error parsing pixel at line " << line_number << ", column " << cell_idx + 1 << ": " << e.what() << std::endl;

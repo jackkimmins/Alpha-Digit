@@ -2,9 +2,9 @@
 #include <iostream>
 #include <iomanip>
 
-Evaluator::Evaluator(const NeuralNetwork& nn, const std::vector<Database::DataPoint>& test_data)
-    : nn(nn), test_data(test_data) {}
+Evaluator::Evaluator(const NeuralNetwork& nn, const std::vector<Database::DataPoint>& test_data) : nn(nn), test_data(test_data) {}
 
+// Evaluate the network on the test data
 void Evaluator::evaluate() const {
     if (test_data.empty()) {
         std::cerr << "Test data is empty. Cannot evaluate the network." << std::endl;
