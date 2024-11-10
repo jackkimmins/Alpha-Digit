@@ -13,8 +13,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .card {
@@ -22,7 +24,8 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 320px;
+    width: 100%;
+    max-width: 400px;
     box-sizing: border-box;
 }
 
@@ -34,10 +37,12 @@ body {
 .card-header h2 {
     margin: 0;
     color: #333333;
+    font-size: 1.5em;
 }
 
 .card-header small {
     color: #777777;
+    font-size: 0.9em;
 }
 
 hr {
@@ -47,11 +52,16 @@ hr {
 }
 
 canvas {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
     border: 2px solid #cccccc;
     border-radius: 4px;
     background-color: #000000;
     cursor: crosshair;
     touch-action: none;
+    display: block;
+    margin: 0 auto;
 }
 
 .card-body {
@@ -60,23 +70,24 @@ canvas {
 
 .btn-group {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    gap: 10px;
     margin-top: 10px;
 }
 
 .btn-group button {
     flex: 1;
-    margin-right: 5px;
-    padding: 10px;
-    font-size: 14px;
+    padding: 12px;
+    font-size: 16px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.btn-group button:last-child {
-    margin-right: 0;
+.btn-group button:not(:last-child) {
+    margin-right: 10px;
 }
 
 .btn-primary {
@@ -99,12 +110,14 @@ canvas {
 }
 
 .list-group {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .list-group-item {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding: 10px 0;
     border: none;
     border-bottom: 1px solid #eeeeee;
@@ -114,18 +127,26 @@ canvas {
     border-bottom: none;
 }
 
-.result.success {
-    color: green;
+.result {
+    padding: 8px 12px;
+    border-radius: 4px;
     font-weight: bold;
+    text-align: center;
+}
+
+.result.success {
+    color: var(--success-color);
+    background-color: #e6f9ee;
 }
 
 .result.error {
-    color: red;
-    font-weight: bold;
+    color: var(--error-color);
+    background-color: #fdecea;
 }
 
 .card-footer {
     text-align: center;
+    margin-top: 20px;
 }
 
 .card-footer a {
@@ -138,12 +159,12 @@ canvas {
     text-decoration: underline;
 }
 
-/* Loading Spinner Styles */
 .spinner-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100%;
 }
 
 .spinner {
@@ -158,6 +179,7 @@ canvas {
 
 .spinner-container p {
     margin-bottom: 0;
+    font-size: 1em;
 }
 
 @keyframes spin {
@@ -165,8 +187,86 @@ canvas {
     100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 320px) {
+/* Responsive Design */
+
+@media (max-width: 600px) {
     .card {
+        padding: 15px;
+    }
+
+    .card-header h2 {
+        font-size: 1.3em;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .list-group-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result {
         width: 100%;
+        margin-top: 5px;
+    }
+
+    .result.success,
+    .result.error {
+        text-align: left;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border-width: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 10px;
+    }
+
+    .card-header h2 {
+        font-size: 1.2em;
+    }
+
+    .btn-group button {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border-width: 5px;
+    }
+}
+
+@media (min-width: 601px) {
+    .btn-group {
+        flex-direction: row;
+    }
+
+    .list-group-item {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .result {
+        width: auto;
+        margin-top: 0;
+    }
+
+    .result.success,
+    .result.error {
+        text-align: center;
     }
 }

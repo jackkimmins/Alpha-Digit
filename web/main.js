@@ -114,13 +114,26 @@ const app = Vue.createApp({
             const canvas = this.$refs.canvas;
             const rect = canvas.getBoundingClientRect();
             let x, y;
-            if (event.type.startsWith('touch')) {
+
+            if (event instanceof Touch) {
+                // Touch event
                 x = event.clientX - rect.left;
                 y = event.clientY - rect.top;
+            } else if (event.type && event.type.startsWith('touch')) {
+                // Touch event passed as event
+                if (event.touches.length > 0) {
+                    x = event.touches[0].clientX - rect.left;
+                    y = event.touches[0].clientY - rect.top;
+                } else if (event.changedTouches.length > 0) {
+                    x = event.changedTouches[0].clientX - rect.left;
+                    y = event.changedTouches[0].clientY - rect.top;
+                }
             } else {
+                // Mouse event
                 x = event.offsetX;
                 y = event.offsetY;
             }
+
             return { x, y };
         },
         midPoint(p1, p2) {
