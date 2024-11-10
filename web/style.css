@@ -1,0 +1,129 @@
+body {
+    background-color: #6d6b29;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 320px;
+    box-sizing: border-box;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: #333333;
+}
+
+.card-header small {
+    color: #777777;
+}
+
+.card-header hr {
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid #afafaf;
+}
+
+canvas {
+    border: 2px solid #cccccc;
+    border-radius: 4px;
+    background-color: #000000;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.card-body {
+    margin-top: 20px;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn-group button {
+    flex: 1;
+    margin-right: 5px;
+    padding: 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-group button:last-child {
+    margin-right: 0;
+}
+
+.btn-primary {
+    background-color: #4e3ab4;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #3d2a94;
+}
+
+.btn-outline-primary {
+    background-color: #ffffff;
+    color: #4e3ab4;
+    border: 2px solid #4e3ab4;
+}
+
+.btn-outline-primary:hover {
+    background-color: #f0f0f0;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.result.success {
+    color: green;
+    font-weight: bold;
+}
+
+.result.error {
+    color: red;
+    font-weight: bold;
+}
+
+.card-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.card-footer a {
+    color: #4e3ab4;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.card-footer a:hover {
+    text-decoration: underline;
+}

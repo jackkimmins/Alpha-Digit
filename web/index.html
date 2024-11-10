@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaDigit</title>
+    <meta name="description" content="Handwritten digit classification using a custom neural network w/ Vanilla C++ and WebAssembly">
+    <meta name="author" content="Jack Kimmins">
+    <meta name="keywords" content="AlphaDigit, Neural Network, WebAssembly, C++, JavaScript, Vue.js, Jack Kimmins">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app" class="card">
+        <div class="card-header">
+            <h2>AlphaDigit</h2>
+            <small>Numerical Digit Classification</small>
+            <hr>
+            <p>Draw a digit in the canvas below and click 'Classify' to see the neural network's prediction.</p>
+        </div>
+
+        <canvas ref="canvas" width="280" height="280"></canvas>
+
+        <div class="card-body">
+            <div class="btn-group">
+                <button class="btn btn-primary" @click="classifyDigit" :disabled="!modelLoaded">Classify</button>
+                <button class="btn btn-outline-primary" @click="resetCanvas">Reset</button>
+                <button class="btn btn-outline-primary" @click="downloadDigit">Download</button>
+            </div>
+
+            <div class="list-group">
+                <div class="list-group-item">
+                    <small>Digit Classification:</small>
+                    <div :class="{'result': true, 'success': isSuccess, 'error': isError}">{{ classification }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <small><a href="https://alpha-digit.appserver.uk/">AlphaDigit</a> | <a href="https://github.com/jackkimmins/alpha-digit" target="_blank">GitHub</a> | <a href="https://jackkimmins.com/" target="_blank">Jack Kimmins</a></small>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="wasm/NeuralNetModule.js"></script>
+    <script src="./main.js" defer></script>
+</body>
+
+</html>
