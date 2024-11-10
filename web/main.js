@@ -1,20 +1,16 @@
-// main.js
-
-// Create the Vue 3 app
 const app = Vue.createApp({
     data() {
         return {
-            isLoading: true, // Indicates if the WASM module is loading
+            isLoading: true,
             isDrawing: false,
             context: null,
-            classification: '...',
-            confidence: '...',
+            classification: 'Ready!',
             modelLoaded: false,
             isSuccess: false,
             isError: false,
             points: [],
-            classify_digit: null, // Will hold the WASM classify_digit function
-            cleanup_nn: null,     // Will hold the WASM cleanup_nn function
+            classify_digit: null,
+            cleanup_nn: null,
         };
     },
     mounted() {
@@ -24,23 +20,19 @@ const app = Vue.createApp({
     methods: {
         async loadModel() {
             try {
-                // Initialize the neural network module with locateFile to correctly find the .data file
                 const Module = await NeuralNetModule({
                     locateFile: function (path, prefix) {
-                        if (path.endsWith('.data') || path.endsWith('.wasm')) {
-                            return 'wasm/' + path;
-                        }
-                        return path;
+                        if (path.endsWith('.data') || path.endsWith('.wasm')) return 'wasm/' + path;
+                        else return path;
                     }
                 });
 
-                // Wrap the C functions to be callable from JavaScript
-                const initialize_nn = Module.cwrap('initialize_nn', 'void', []);
+                // These are the C functions exposed by the WASM module, please see main_wasm.cpp for the implementation 🙂
+                const initialise_nn = Module.cwrap('initialise_nn', 'void', []);
                 this.classify_digit = Module.cwrap('classify_digit', 'number', ['string']);
                 this.cleanup_nn = Module.cwrap('cleanup_nn', 'void', []);
 
-                // Initialize the neural network
-                initialize_nn();
+                initialise_nn();
                 this.modelLoaded = true;
             } catch (error) {
                 console.error('Failed to load the NeuralNetModule:', error);
@@ -48,10 +40,7 @@ const app = Vue.createApp({
                 this.isError = true;
             } finally {
                 this.isLoading = false;
-                // Wait for the DOM to update before initializing the canvas
-                this.$nextTick(() => {
-                    this.initCanvas();
-                });
+                this.$nextTick(() => { this.initCanvas(); });
             }
         },
         initCanvas() {
@@ -61,15 +50,12 @@ const app = Vue.createApp({
                 return;
             }
             this.context = canvas.getContext('2d');
-            // Set canvas background to black
             this.context.fillStyle = "#000000";
             this.context.fillRect(0, 0, canvas.width, canvas.height);
-            // Set drawing color to white
             this.context.strokeStyle = "#FFFFFF";
-            this.context.lineWidth = 20; // Increase line width for better visibility when scaling down
+            this.context.lineWidth = 20;
             this.context.lineCap = "round";
-            this.context.lineJoin = "round"; // Ensures smooth joints between lines
-            // Enable image smoothing
+            this.context.lineJoin = "round";
             this.context.imageSmoothingEnabled = true;
             this.context.imageSmoothingQuality = 'high';
 
@@ -87,7 +73,7 @@ const app = Vue.createApp({
         },
         startDrawing(event) {
             this.isDrawing = true;
-            this.points = []; // Reset points
+            this.points = [];
             const { x, y } = this.getCoordinates(event);
             this.points.push({ x, y });
             this.context.beginPath();
@@ -118,15 +104,11 @@ const app = Vue.createApp({
         },
         handleTouchStart(event) {
             event.preventDefault();
-            if (event.touches.length > 0) {
-                this.startDrawing(event.touches[0]);
-            }
+            if (event.touches.length > 0) this.startDrawing(event.touches[0]);
         },
         handleTouchMove(event) {
             event.preventDefault();
-            if (event.touches.length > 0) {
-                this.draw(event.touches[0]);
-            }
+            if (event.touches.length > 0) this.draw(event.touches[0]);
         },
         getCoordinates(event) {
             const canvas = this.$refs.canvas;
@@ -154,23 +136,20 @@ const app = Vue.createApp({
                 return;
             }
 
-            // Convert canvas to 28x28 grayscale image with smoothing
+            // We need to downscale the canvas image to match the input size of the model (28x28)
             const canvas = this.$refs.canvas;
 
-            // Create a temporary canvas for preprocessing
+            // Temporary canvas for preprocessing
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = 28;
             tempCanvas.height = 28;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Enable image smoothing for better downscaling
+            // Found that this leads to better results as it matches the original MNIST CSV dataset better
             tempCtx.imageSmoothingEnabled = true;
             tempCtx.imageSmoothingQuality = 'high';
-
-            // Apply a blur filter before scaling down
             tempCtx.filter = 'blur(1px)';
 
-            // Draw the canvas image to the temp canvas with scaling and filtering
             tempCtx.drawImage(canvas, 0, 0, 28, 28);
 
             // Get image data from the temp canvas
@@ -179,7 +158,6 @@ const app = Vue.createApp({
             const pixels = [];
 
             for (let i = 0; i < data.length; i += 4) {
-                // Luminosity method for grayscale
                 const r = data[i];
                 const g = data[i + 1];
                 const b = data[i + 2];
@@ -192,24 +170,20 @@ const app = Vue.createApp({
 
             console.log('Input CSV:', input_csv);
 
-            // Call the classify_digit function from WASM
             try {
                 const result = this.classify_digit(input_csv);
                 if (result >= 0 && result <= 9) {
                     this.classification = 'Predicted Digit: ' + result;
-                    this.confidence = '...'; // Confidence not available from WASM model
                     this.isSuccess = true;
                     this.isError = false;
                 } else {
                     this.classification = 'Classification failed. Please try again.';
-                    this.confidence = '...';
                     this.isSuccess = false;
                     this.isError = true;
                 }
             } catch (error) {
                 console.error('Error during classification:', error);
                 this.classification = 'An error occurred during classification.';
-                this.confidence = '...';
                 this.isSuccess = false;
                 this.isError = true;
             }
@@ -217,8 +191,7 @@ const app = Vue.createApp({
         resetCanvas() {
             this.context.fillStyle = "#000000";
             this.context.fillRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
-            this.classification = '...';
-            this.confidence = '...';
+            this.classification = 'Ready!';
             this.isSuccess = false;
             this.isError = false;
         },
@@ -243,5 +216,4 @@ const app = Vue.createApp({
     }
 });
 
-// Mount the Vue app
 app.mount('#app');

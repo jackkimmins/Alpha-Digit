@@ -14,7 +14,7 @@ EMCC_COMPILE_FLAGS = -std=c++20 -O3 -Iinclude -fexceptions
 EMCC_LINK_FLAGS = -s WASM=1 \
                   -s MODULARIZE=1 \
                   -s 'EXPORT_NAME="NeuralNetModule"' \
-                  -s EXPORTED_FUNCTIONS='["_initialize_nn", "_classify_digit", "_cleanup_nn"]' \
+                  -s EXPORTED_FUNCTIONS='["_initialise_nn", "_classify_digit", "_cleanup_nn"]' \
                   -s EXPORTED_RUNTIME_METHODS='["cwrap", "ccall"]' \
                   -s DISABLE_EXCEPTION_CATCHING=0 \
                   --preload-file models/best_model.dat@/models/best_model.dat

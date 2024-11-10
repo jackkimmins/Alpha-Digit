@@ -28,7 +28,7 @@ var readyPromise = new Promise((resolve, reject) => {
   readyPromiseResolve = resolve;
   readyPromiseReject = reject;
 });
-["_initialize_nn","_classify_digit","_cleanup_nn","getExceptionMessage","incrementExceptionRefcount","decrementExceptionRefcount","_memory","___indirect_function_table","onRuntimeInitialized"].forEach((prop) => {
+["_initialise_nn","_classify_digit","_cleanup_nn","getExceptionMessage","incrementExceptionRefcount","decrementExceptionRefcount","_memory","___indirect_function_table","onRuntimeInitialized"].forEach((prop) => {
   if (!Object.getOwnPropertyDescriptor(readyPromise, prop)) {
     Object.defineProperty(readyPromise, prop, {
       get: () => abort('You are getting ' + prop + ' on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js'),
@@ -58,7 +58,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /tmp/tmporg9hfxk.js
+// include: /tmp/tmpexj1pcee.js
 
   if (!Module['expectedDataFileDownloads']) {
     Module['expectedDataFileDownloads'] = 0;
@@ -246,21 +246,21 @@ Module['FS_createPath']("/", "models", true, true);
 
   })();
 
-// end include: /tmp/tmporg9hfxk.js
-// include: /tmp/tmp2w6yf9nu.js
+// end include: /tmp/tmpexj1pcee.js
+// include: /tmp/tmpqp04to2j.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if (Module['$ww'] || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: /tmp/tmp2w6yf9nu.js
-// include: /tmp/tmp29tlt277.js
+  // end include: /tmp/tmpqp04to2j.js
+// include: /tmp/tmpdpydnuo8.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach((task) => {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: /tmp/tmp29tlt277.js
+  // end include: /tmp/tmpdpydnuo8.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -4803,7 +4803,7 @@ var wasmImports = {
 };
 var wasmExports = createWasm();
 var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors', 0);
-var _initialize_nn = Module['_initialize_nn'] = createExportWrapper('initialize_nn', 0);
+var _initialise_nn = Module['_initialise_nn'] = createExportWrapper('initialise_nn', 0);
 var _classify_digit = Module['_classify_digit'] = createExportWrapper('classify_digit', 1);
 var _cleanup_nn = Module['_cleanup_nn'] = createExportWrapper('cleanup_nn', 0);
 var ___cxa_free_exception = createExportWrapper('__cxa_free_exception', 1);
